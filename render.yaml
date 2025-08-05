@@ -8,6 +8,9 @@ services:
   - name: redis-cache
     type: redis
     plan: free # Specifies the free tier for Redis.
+    ipAllowList: # <-- FIX: Required for free Redis instances. Allows internal traffic.
+      - cidr: 0.0.0.0/0
+        description: "Allow all internal traffic"
 
   # 2. The Python backend service.
   - name: backend-service
@@ -40,4 +43,5 @@ services:
         fromService:
           type: web
           name: backend-service
-          property: url
+          property: hostport
+          
