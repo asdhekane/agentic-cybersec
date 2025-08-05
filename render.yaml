@@ -1,0 +1,46 @@
+# render.yaml
+# This file defines all the services for your application.
+# Render will automatically detect this file and deploy accordingly.
+
+services:
+  # 1. The Redis instance for messaging and logging.
+  - name: redis-cache
+    type: redis
+    plan: free # Specifies the free tier for Redis.
+
+  # 2. The Python backend service.
+  - name: backend-service
+    type: web
+    plan: free # Specifies the free tier for the web service.
+    runtime: docker
+    repo: https://github.com/asdhekane/agentic-cybersec # <-- IMPORTANT: Change this!
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: redis-cache
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: redis-cache
+          property: port
+
+  # 3. The React frontend service.
+  - name: frontend-service
+    type: web
+    plan: free # Specifies the free tier for the web service.
+    repo: https://github.com/asdhekane/agentic-cybersec # <-- IMPORTANT: Change this!
+    # Build and serve configuration for a standard React app.
+    buildFilter:
+      paths:
+      - frontend/**
+    buildCommand: "npm install && npm run build"
+    publishDirectory: "./frontend/build"
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        fromService:
+          type: web
+          name: backend-service
+          property: url
