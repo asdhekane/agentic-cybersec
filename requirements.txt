@@ -1,0 +1,8 @@
+# backend/requirements.txt
+flask
+flask-cors
+redis
+transformers
+torch
+streamlit
+requests

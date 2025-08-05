@@ -1,0 +1,40 @@
+# docker-compose.yml
+# This file defines and configures the multi-container Docker application.
+# To run the entire system, execute `docker-compose up --build` from the project root.
+
+version: '3.8'
+
+services:
+  # The React frontend service, built for production and served with Nginx.
+  frontend:
+    build:
+      # Specifies the path to the Dockerfile and build context for the frontend.
+      context: ./frontend
+    ports:
+      # Maps port 3000 on your local machine to port 80 inside the container.
+      # You will access the UI at http://localhost:3000.
+      - "3000:80"
+
+  # The Python backend service running the Flask API and WebSocket server.
+  backend:
+    build:
+      # Specifies the path to the Dockerfile and build context for the backend.
+      context: ./backend
+    ports:
+      # Maps port 5000 on your local machine to port 5000 inside the container.
+      - "5000:5000"
+    environment:
+      # Sets an environment variable inside the container. This tells the Python
+      # code to connect to Redis using the service name 'redis'.
+      - REDIS_HOST=redis
+    depends_on:
+      # Ensures that the Redis container is started before the backend container.
+      - redis
+
+  # The Redis service for messaging between agents and storing logs.
+  redis:
+    # Pulls the official lightweight Redis image from Docker Hub.
+    image: "redis:alpine"
+    ports:
+      # Maps the Redis port for potential direct access or debugging.
+      - "6379:6379"
