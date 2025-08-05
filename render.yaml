@@ -1,3 +1,4 @@
+
 # render.yaml
 # This file defines all the services for your application.
 # Render will automatically detect this file and deploy accordingly.
@@ -31,13 +32,9 @@ services:
   - name: frontend-service
     type: web
     plan: free # Specifies the free tier for the web service.
+    runtime: docker # <-- FIX: Specify docker runtime
     repo: https://github.com/asdhekane/agentic-cybersec # <-- IMPORTANT: Change this!
-    # Build and serve configuration for a standard React app.
-    buildFilter:
-      paths:
-      - frontend/**
-    buildCommand: "npm install && npm run build"
-    publishDirectory: "./frontend/build"
+    dockerfilePath: ./frontend/Dockerfile # <-- FIX: Point to the frontend Dockerfile
     envVars:
       - key: REACT_APP_BACKEND_URL
         fromService:
